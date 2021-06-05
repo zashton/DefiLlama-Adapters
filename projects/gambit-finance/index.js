@@ -1,5 +1,7 @@
 const sdk = require("@defillama/sdk");
 const axios = require('axios')
+const {transformBscAddress} = require('../helper/portedTokens')
+
 
 const apiEndpoint = 'https://gambit-server-staging.uc.r.appspot.com/tokens'
 const pool = "0xc73A8DcAc88498FD4b4B1b2AaA37b0a2614Ff67B"
@@ -15,8 +17,11 @@ async function tvl(timestamp, block, chainBlocks) {
         chain: 'bsc',
         block: chainBlocks.bsc
     })
-    sdk.util.sumMultiBalanceOf(balances, tokenBalances, d=>`bsc:${d}`)
-    console.log('gambit', balances)
+    const transformAdress = await transformBscAddress()
+    tokenBalances.output.map(d=>{
+        d.input.target = transformAdress(d.input.target)
+    })
+    sdk.util.sumMultiBalanceOf(balances, tokenBalances)
     return balances
 }
 
