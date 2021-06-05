@@ -51,19 +51,13 @@ const bscTokenPools = {
 function getBSCAddress(address) {
     return `bsc:${address}`
 }
+const coinAddress = '0x0000000000000000000000000000000000000000'
 
-async function tvl(timestamp, block) {
+async function eth(timestamp, block) {
     let balances = {};
 
-    const ethBlock = await sdk.api.util.lookupBlock(timestamp, {
-        chain: 'ethereum'
-    }).output
+    const ethBlock = block
 
-    const bscBlock = await sdk.api.util.lookupBlock(timestamp, {
-        chain: 'bsc'
-    }).output
-
-    const coinAddress = '0x0000000000000000000000000000000000000000'
     // eth
     balances[coinAddress] = (await sdk.api.eth.getBalance({
         target: ethPool,
@@ -89,8 +83,16 @@ async function tvl(timestamp, block) {
           sdk.util.sumSingleBalance(balances, tokenPool.token, tokenLocked.output);
     }
 
+    return balances
+}
+
+const wbnb = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+async function bsc(timestamp, block, chainBlocks) {
+    let balances = {};
+
+    const bscBlock = chainBlocks.bsc
     // bsc
-    balances[getBSCAddress(coinAddress)] = ((await sdk.api.eth.getBalance({
+    balances[getBSCAddress(wbnb)] = ((await sdk.api.eth.getBalance({
         target: bscPool,
         chain: 'bsc',
         bscBlock
@@ -110,9 +112,14 @@ async function tvl(timestamp, block) {
 
 
     return balances
-
 }
 
 module.exports = {
-  tvl
+    ethereum:{
+        tvl: eth
+    },
+    bsc:{
+        tvl: bsc
+    },
+  tvl: sdk.util.sumChainTvls([eth, bsc])
 }
