@@ -44,14 +44,19 @@ const pools = [
     '0xFdb7D4AbD0109b36667946726dF943E83570286C',
     '0x7f0320cef62C88CE1DB7d77c1849082C053E2344',
     '0xC341c6a006cab105E8CD2518e25aaB311Cb22FF6',
-    '0x74fdc215f8309Ec58Fd34455bf3Fee95FB3416dD'
+    '0x74fdc215f8309Ec58Fd34455bf3Fee95FB3416dD',
+    '0xc1d9Ead28Fc4CB9658C62594A695a53bfD306f77',
+    '0xf92f12b505594EedF65CB8B973819dfA242c61D7',
+    '0xFeED0bb79035c61CF6519795a02a6a2A69A11aAC',
+    '0xD2220455E760Fb27ED8aaA6F9C7E143A687BB0aD'
     
 ]
 
 const pots = [
     '0xa9b005d891414E0d6E0353490e099D0CA4C778Fc',
     '0x60D8a581d519397E870c5376228cd7E7aBBC243B',
-    '0xe0D17B4695862B0A2590730762EC25ee562B2CA4'
+    '0xe0D17B4695862B0A2590730762EC25ee562B2CA4',
+    '0xD601966588E812218a45f3ec06D3A89602348183'
 ]
 
 const ZERO = new BigNumber(0)
@@ -83,7 +88,7 @@ async function tvl(timestamp) {
 
         
     return {
-        'tether': total.plus(pot_total).dividedBy(ETHER).toString()
+        'tether': total.plus(pot_total).dividedBy(ETHER).toNumber()
     }
 }
 
