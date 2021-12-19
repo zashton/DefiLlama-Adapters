@@ -4,6 +4,29 @@ const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
+const {getBlock} = require('./getBlock')
+
+async function requery(results, chain, block, abi, times = 2){
+  for(let i=0; i<times; i++){
+    await requeryOnce(results, chain, block, abi)
+  }
+}
+
+async function requeryOnce(results, chain, block, abi){
+  if(results.some(r=>!r.success)){
+    const failed = results.map((r,i)=>[r,i]).filter(r=>!r[0].success)
+    const newResults = await sdk.api.abi
+    .multiCall({
+      abi,
+      chain,
+      calls: failed.map((f) => f[0].input),
+      block,
+    }).then(({ output }) => output);
+    failed.forEach((f, i)=>{
+      results[f[1]] = newResults[i]
+    })
+  }
+}
 
 async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMulticall = false) {
   let pairAddresses;
@@ -14,6 +37,9 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
       chain,
       block
     })).output
+    if(pairLength === null){
+      throw new Error("allPairsLength() failed")
+    }
     const pairNums = Array.from(Array(Number(pairLength)).keys())
     const pairs = (await sdk.api.abi.multiCall({
       abi: factoryAbi.allPairs,
@@ -24,6 +50,7 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
       })),
       block
     })).output
+    await requery(pairs, chain, block, factoryAbi.allPairs);
     pairAddresses = pairs.map(result => result.output.toLowerCase())
   } else {
     const logs = (
@@ -78,6 +105,9 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
         block,
       }).then(({ output }) => output),
   ]);
+  await requery(token0Addresses, chain, block, token0);
+  await requery(token1Addresses, chain, block, token1);
+  await requery(reserves, chain, block, getReserves);
 
   const pairs = {};
   // add token0Addresses
@@ -139,6 +169,27 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
   return balances
 };
 
+function uniTvlExport(factory, chain, transformAddressOriginal=undefined){
+  return async (timestamp, _ethBlock, chainBlocks)=>{
+    let transformAddress;
+    if(transformAddressOriginal === undefined){
+      transformAddress = addr=>`${chain}:${addr}`;
+    }else{
+      transformAddress = await transformAddressOriginal()
+    }
+    const block = await getBlock(timestamp, chain , chainBlocks)
+    return calculateUniTvl(transformAddress, block, chain, factory, 0, true)
+  }
+}
+
+async function simpleAddUniTvl(balances, factory, chain, timestamp, chainBlocks){
+  const transformAddress = addr=>`${chain}:${addr}`;
+  const block = await getBlock(timestamp, chain , chainBlocks);
+  return calculateUniTvl(transformAddress, block, chain, factory, 0, true)
+}
+
 module.exports = {
   calculateUniTvl,
+  uniTvlExport,
+  simpleAddUniTvl
 };

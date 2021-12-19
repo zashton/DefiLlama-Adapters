@@ -91,6 +91,8 @@ async function tvl(timestamp, block) {
 
 
 module.exports = {
+  timetravel: false,
+  misrepresentedTokens: true,
   tvl,
   ethereum: {
     tvl: ethereumTvl,

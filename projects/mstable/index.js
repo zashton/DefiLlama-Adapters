@@ -10,8 +10,8 @@ const ASSETS = {
       startBlock: 10148032,
       isMasset: true,
     },
-    // mBTC
     {
+      // mBTC
       address: '0x945facb997494cc2570096c74b5f66a3507330a1',
       startBlock: 11840521,
       isMasset: true,
@@ -27,6 +27,11 @@ const ASSETS = {
       startBlock: 12146645,
     },
     {
+      // fPmBTC/tBTCv2
+      address: '0xc3280306b6218031E61752d060b091278d45c329',
+      startBlock: 13460377,
+    },
+    {
       // fPmUSD/BUSD
       address: '0xfe842e95f8911dcc21c943a1daa4bd641a1381c6',
       startBlock: 12146707,
@@ -36,6 +41,11 @@ const ASSETS = {
       address: '0x4fb30c5a3ac8e85bc32785518633303c4590752d',
       startBlock: 12146745,
     },
+    {
+      // fPmUSD/alUSD
+      address: '0x4eaa01974b6594c0ee62ffd7fee56cf11e6af936',
+      startBlock: 12806795,
+    },
   ],
   polygon: [
     {
@@ -43,6 +53,11 @@ const ASSETS = {
       address: '0xe840b73e5287865eec17d250bfb1536704b43b21',
       startBlock: 13630640,
       isMasset: true,
+    },
+    {
+      // fpmUSD/FRAX
+      address: '0xb30a907084ac8a0d25dddab4e364827406fd09f0',
+      startBlock: 16099014,
     },
   ],
 };
