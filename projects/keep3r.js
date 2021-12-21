@@ -95,7 +95,7 @@ const totalBorrows = {
   "type": "function"
 }
 
-async function staking(timestamp, block) {
+async function pool2(timestamp, block) {
 
   const balances = {};
   // Protocol Credit Mining LPs
@@ -106,7 +106,7 @@ async function staking(timestamp, block) {
       [KPR_MM_SUSHI_POOL, true],
       [KPR_AMOR_SUSHI_POOL, true],
       [KP3R, false]],
-    [KP3R],
+    [KP3R, BOND_TREASURY],
     block
   );
 
@@ -139,7 +139,6 @@ async function tvl(timestamp, block) {
       [SJPY, false],
       [SCHF, false]
     ].concat([
-      [KPR_WETH_SUSHI_POOL, true],
       [USDC_ibAUD_POOL, true],
       [USDC_ibEUR_POOL, true],
       [USDC_ibKRW_POOL, true],
@@ -177,7 +176,7 @@ async function borrowed(timestamp, block) {
 module.exports = {
   ethereum: {
     tvl,
-    staking,
-    borrowed
+    borrowed,
+    pool2
   }
 };
